@@ -1,13 +1,22 @@
-## Solace Candidate Assignment
+## Advocate Finder
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+A Next.js application for searching and browsing advocates. Features both client-side and server-side pagination implementations.
 
-## Getting Started
+### Tech Stack
 
-Install dependencies
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Drizzle ORM
+- PostgreSQL
+
+### Getting Started
+
+Install dependencies:
 
 ```bash
-npm i
+npm install
 ```
 
 Run the development server:
@@ -16,25 +25,25 @@ Run the development server:
 npm run dev
 ```
 
-## Database set up
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The app is configured to return a default list of advocates. This will allow you to get the app up and running without needing to configure a database. If you’d like to configure a database, you’re encouraged to do so. You can uncomment the url in `.env` and the line in `src/app/api/advocates/route.ts` to test retrieving advocates from the database.
+### Database Setup (Optional)
 
-1. Feel free to use whatever configuration of postgres you like. The project is set up to use docker-compose.yml to set up postgres. The url is in .env.
+The app works out of the box with mock data. To use a real database:
+
+1. Start PostgreSQL (via Docker or locally):
 
 ```bash
 docker compose up -d
 ```
 
-2. Create a `solaceassignment` database.
-
-3. Push migration to the database
+2. Create the database and push the schema:
 
 ```bash
 npx drizzle-kit push
 ```
 
-4. Seed the database
+3. Seed the database:
 
 ```bash
 curl -X POST http://localhost:3000/api/seed

@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: solaceassignment
+      POSTGRES_DB: advocate_finder
     volumes:
       - psql:/var/lib/postgresql/data
     ports:

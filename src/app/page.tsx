@@ -1,168 +1,192 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import ClientPaginationSection from "@/components/ClientPaginationSection";
+import ServerPaginationSection from "@/components/ServerPaginationSection";
 
 export default function Home() {
-  interface Advocate {
-    id: string;
-    firstName: string;
-    lastName: string;
-    city: string;
-    degree: string;
-    specialties: string[];
-    yearsOfExperience: number;
-    phoneNumber: string;
-  }
-
-  const [advocates, setAdvocates] = useState<Advocate[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetch("/api/advocates");
-        if (!res.ok) throw new Error(res.statusText);
-
-        const json = await res.json();
-        setAdvocates(json.data);
-      } catch (err) {
-        console.error(err);
-        setError("Unable to load advocates. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getData();
-  }, []);
-
-  const term = searchTerm.toLowerCase().trim();
-
-  const visibleAdvocates = advocates.filter((advocate) => {
-    if (!term) return true;
-    return (
-      advocate.firstName.toLowerCase().includes(term) ||
-      advocate.lastName.toLowerCase().includes(term) ||
-      advocate.city.toLowerCase().includes(term) ||
-      advocate.degree.toLowerCase().includes(term) ||
-      advocate.specialties.some((s) => s.toLowerCase().includes(term)) ||
-      advocate.yearsOfExperience.toString().includes(term)
-    );
-  });
-
-  const onChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setSearchTerm(e.target.value);
-
-  const onClick = () => setSearchTerm("");
-
-  if (loading) {
-    return (
-      <div className="flex justify-center py-10">
-        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-600" />
-        <p className="ml-2">Loading advocates&hellip;</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <p className="text-center text-red-600 py-10">{error}</p>;
-  }
-
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-2xl font-semibold">Solace Advocates</h1>
-      <br />
-      <br />
-      <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4">
-        <div className="flex flex-col">
-          <label className="text-sm font-medium" htmlFor="advocate-search">
-            Search advocates
-          </label>
-          <input
-            id="advocate-search"
-            className="border border-gray-400 rounded px-2 py-1"
-            value={searchTerm}
-            onChange={onChange}
-            placeholder="Type a name, city, etc."
-          />
-          <span className="text-xs text-gray-500 mt-1">
-            {searchTerm && <>Searching for “{searchTerm}”</>}
-          </span>
-        </div>
-        <button
-          onClick={onClick}
-          className="text-blue-600 underline text-sm"
-        >
-          Reset
-        </button>
-      </div>
-      <br />
-      <br />
-      <div className="overflow-x-auto">
-        <table className="text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                First Name
-              </th>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                Last Name
-              </th>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                City
-              </th>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                Degree
-              </th>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                Specialties
-              </th>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                Years of Experience
-              </th>
-              <th className="px-3 py-2 text-left text-sm font-medium uppercase">
-                Phone Number
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleAdvocates.length === 0 ? (
-              <p className="py-4 text-gray-600">
-                No advocates match “{searchTerm}”.
-              </p>
-            ) : (
-              visibleAdvocates.map((advocate) => (
-                <tr
-                  key={`${advocate.firstName}-${advocate.lastName}`}
-                  className="odd:bg-white even:bg-gray-50 hover:bg-blue-50"
-                >
-                  <td className="px-3 py-1">{advocate.firstName}</td>
-                  <td className="px-3 py-1">{advocate.lastName}</td>
-                  <td className="px-3 py-1">{advocate.city}</td>
-                  <td className="px-3 py-1">{advocate.degree}</td>
-                  <td className="px-3 py-1">
-                    <div className="max-h-20 overflow-y-auto space-x-1">
-                      {advocate.specialties.map((s) => (
-                        <span
-                          key={s}
-                          className="bg-gray-200 text-gray-800 text-xs px-2  rounded mb-1"
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
+      <h1 className="text-3xl font-bold mb-2">Advocate Finder</h1>
+      <p className="text-gray-600 mb-10">
+        Compare two pagination approaches: Client-side vs Server-side
+      </p>
 
-                  <td className="px-3 py-1">{advocate.yearsOfExperience}</td>
-                  <td className="px-3 py-1">{advocate.phoneNumber}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <section className="mb-16 border-2 border-blue-300 rounded-lg p-6 bg-blue-50">
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-blue-900 mb-2">
+            Client-Side Pagination (Front-End)
+          </h2>
+          <div className="text-sm text-blue-800 bg-blue-100 p-4 rounded">
+            <p className="font-semibold mb-2">How it works:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>Step 1:</strong> Fetch ALL advocate data from server in
+                one request
+              </li>
+              <li>
+                <strong>Step 2:</strong> Store all data in React state
+              </li>
+              <li>
+                <strong>Step 3:</strong> Filter data in browser using Fuse.js
+                (fuzzy search)
+              </li>
+              <li>
+                <strong>Step 4:</strong> Slice the filtered array to show only
+                current page items
+              </li>
+              <li>
+                <strong>Step 5:</strong> Page changes happen instantly (no
+                server calls)
+              </li>
+            </ul>
+            <p className="mt-3 font-semibold">Benefits:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Instant page navigation (no loading delays)</li>
+              <li>Advanced fuzzy search with Fuse.js</li>
+              <li>Works offline after initial load</li>
+            </ul>
+            <p className="mt-3 font-semibold">Drawbacks:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Large initial data transfer</li>
+              <li>Not suitable for very large datasets (10,000+ items)</li>
+              <li>Higher memory usage in browser</li>
+            </ul>
+          </div>
+        </div>
+
+        <ClientPaginationSection />
+      </section>
+
+      <section className="mb-16 border-2 border-green-300 rounded-lg p-6 bg-green-50">
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-green-900 mb-2">
+            Server-Side Pagination (Back-End)
+          </h2>
+          <div className="text-sm text-green-800 bg-green-100 p-4 rounded">
+            <p className="font-semibold mb-2">How it works:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <strong>Step 1:</strong> Send request with page number and
+                search term to server
+              </li>
+              <li>
+                <strong>Step 2:</strong> Server filters data based on search
+                term
+              </li>
+              <li>
+                <strong>Step 3:</strong> Server calculates which items belong
+                to requested page
+              </li>
+              <li>
+                <strong>Step 4:</strong> Server returns ONLY that page&apos;s
+                data + metadata (total count, total pages)
+              </li>
+              <li>
+                <strong>Step 5:</strong> Client displays received data and
+                shows pagination controls
+              </li>
+              <li>
+                <strong>Step 6:</strong> Each page change triggers a new server
+                request
+              </li>
+            </ul>
+            <p className="mt-3 font-semibold">Benefits:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Minimal data transfer per request</li>
+              <li>Scales to millions of records</li>
+              <li>Lower browser memory usage</li>
+              <li>Can leverage database indexes for fast queries</li>
+            </ul>
+            <p className="mt-3 font-semibold">Drawbacks:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Network delay on each page change</li>
+              <li>Requires server round-trip for every interaction</li>
+              <li>More complex implementation</li>
+            </ul>
+          </div>
+        </div>
+
+        <ServerPaginationSection />
+      </section>
+
+      <section className="bg-gray-100 p-6 rounded-lg">
+        <h2 className="text-2xl font-semibold mb-4">
+          Implementation Guide Summary
+        </h2>
+
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-semibold text-blue-900 mb-2">
+              Client-Side Pagination Steps:
+            </h3>
+            <ol className="list-decimal list-inside space-y-2 text-sm">
+              <li>
+                Fetch all data once using <code>useEffect</code> hook on mount
+              </li>
+              <li>
+                Store complete dataset in state:{" "}
+                <code>const [data, setData] = useState([])</code>
+              </li>
+              <li>
+                Track current page: <code>const [page, setPage] = useState(0)</code>
+              </li>
+              <li>
+                Calculate slice indices:{" "}
+                <code>start = page * itemsPerPage</code>,{" "}
+                <code>end = start + itemsPerPage</code>
+              </li>
+              <li>
+                Render sliced data: <code>data.slice(start, end)</code>
+              </li>
+              <li>
+                Update page state on button click (no re-fetch needed)
+              </li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-semibold text-green-900 mb-2">
+              Server-Side Pagination Steps:
+            </h3>
+            <ol className="list-decimal list-inside space-y-2 text-sm">
+              <li>
+                Track page in state: <code>const [page, setPage] = useState(0)</code>
+              </li>
+              <li>
+                Create API endpoint that accepts query params:{" "}
+                <code>?page=0&limit=10&search=term</code>
+              </li>
+              <li>
+                In API: Filter data based on search, then calculate:{" "}
+                <code>startIndex = page * limit</code>,{" "}
+                <code>endIndex = startIndex + limit</code>
+              </li>
+              <li>
+                Return paginated slice + metadata:{" "}
+                <code>
+                  {`{data: items, totalPages, totalItems, currentPage}`}
+                </code>
+              </li>
+              <li>
+                On client, use <code>useEffect([page, search])</code> to
+                re-fetch when page/search changes
+              </li>
+              <li>Display returned data and use metadata for pagination UI</li>
+            </ol>
+          </div>
+
+          <div className="bg-white p-4 rounded border-l-4 border-yellow-500">
+            <h3 className="font-semibold mb-2">Key Difference:</h3>
+            <p className="text-sm">
+              <strong>Client-side:</strong> Pagination logic lives in the
+              browser (JavaScript array slicing).
+              <br />
+              <strong>Server-side:</strong> Pagination logic lives on the server
+              (API endpoint handles slicing and returns subset).
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
