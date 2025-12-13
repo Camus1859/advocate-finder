@@ -19,7 +19,7 @@ describe("Search Logic Edge Cases", () => {
         "specialties",
         "yearsOfExperience",
       ],
-      threshold: 0.4,
+      threshold: 0.5,
       distance: 100,
     };
 
